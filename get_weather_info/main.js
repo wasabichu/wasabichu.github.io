@@ -148,7 +148,7 @@ function geocode(address, result_notify) {
         for (i = result.address_components.length - 1; i >= 0; i--) {
             for (j = 0; j < result.address_components[i].types.length; j++) {
                 if (result.address_components[i].types[j].indexOf("country") != -1) {
-                    country = "(" + result.address_components[i].long_name + ")";
+                    country = result.address_components[i].long_name;
                 } else if (result.address_components[i].types[j].indexOf("sublocality") != -1) {
                     break;
                 } else if (result.address_components[i].types[j].indexOf("administrative_area_level") != -1 ||
@@ -157,7 +157,10 @@ function geocode(address, result_notify) {
                 }
             }
         }
-        address += " " + country;
+
+	if (address == "") {
+           address += " " + country; //ちょっとくどいので省略
+	}
         latitude = result.geometry.location.lat;
         longitude = result.geometry.location.lng;
         
@@ -227,7 +230,7 @@ function SpeechRecognitionSetup() {
             this.Speech.lang = "ja";
             this.Speech.onerror = function(event) {
                 //音声認識した結果、エラーとなった場合の処理
-                alert('error')   
+                console.log('error');
             };
             
             this.Speech.onnomatch = function(event) {
@@ -309,8 +312,9 @@ function SpeechSynthesisUtteranceSetup() {
             }
         },
         exec: function(text) {
+            speechSynthesis.cancel();
             this.Speech.text = text;
-            speechSynthesis.speak( this.Speech);
+            speechSynthesis.speak(this.Speech);
         }
     };
     return SynthesisUtterance;
